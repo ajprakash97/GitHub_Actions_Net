@@ -1,0 +1,33 @@
+name: Test .NET Core CI/CD Pipeline
+
+on:
+  workflow_dispatch: # This allows the workflow to be triggered manually.
+
+jobs:
+  build:
+    runs-on: windows-latest # .NET builds typically run on Windows, but you can change this if needed.
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: 'main' # Specifies the branch to checkout
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0' # Specify your .NET Core version here
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Publish
+      run: dotnet publish --configuration Release --output publish
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: published-app
+        path: publish/
